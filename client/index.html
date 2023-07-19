@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<head>
+    <link rel="stylesheet" href="css/style.css" type="text/css"/>
+    <title>Game</title>
+</head>
+
+<body>
+    <div id="GameDiv" class="GameContainer Center">
+        <div id="GameDivWrapper" class="Wrapper">
+            <div id="AlertBoxScreen" style="display: none;" class="AlertBoxScreen">
+                <div id="AlertBoxBackground" class="AlertBoxBackground"></div>
+                <div id="AlertBoxContainer" class="AlertBoxContainer">
+                    <div id="AlertBoxTextBackground" class="AlertBoxTextBackground"></div>
+                    <div id="AlertBoxText" class="AlertBoxText"></div>
+                    <button id="AlertBoxButton" class="AlertBoxButton">Okay</button>
+                </div>
+            </div>
+            <div id="LoginScreen" class="Center LoginScreen" style="display:none;">
+                <div id="LoginAccount" class="LoginAccount">
+                    <form id="LoginForm" class="Form" action="javascript:void(0);" onsubmit="">
+                        <div class="LoginLabelBackground">
+                            <label class="LoginLabel Center">LOGIN</label>
+                        </div>
+                        <label for="LoginTextbox" class="FormLabelUsername Center">Username</label>
+                        <input id="LoginTextbox"  type="username" class="FormInputUsername Center"></input>
+                        <label for="LoginPasswordbox" class="FormLabelPassword Center">Password</label>
+                        <input id="LoginPasswordbox"  type="password" class="FormInputPassword Center"></input>
+                        <button id="LoginButton" class="FormButton Center">Submit</input>
+                    </form>
+                </div>
+                <div id="CreateAccount" class="CreateAccount">
+                    <form id="CreateAccountForm" class="Form" action="javascript:void(0);" onsubmit="">
+                        <div class="CreateAccountLabelBackground">
+                            <label class="LoginLabel Center">CREATE ACCOUNT</label>
+                        </div>
+                        <label for="CreateAccountTextbox" class="FormLabelUsername Center">Username</label>
+                        <input id="CreateAccountTextbox"  type="username" class="FormInputUsername Center"></input>
+                        <label for="CreateAccountPasswordbox" class="FormLabelPassword Center">Password</label>
+                        <input id="CreateAccountPasswordbox"  type="password" class="FormInputPassword Center"></input>
+                        <button id="CreateAccountButton" class="FormButton Center">Submit</input>
+                    </form>
+                </div>
+            </div>
+            <div id="MenuWrapper" class="MenuWrapper">
+                <div id="LeftColumn" class="LeftColumn">
+                    <div id="MainMenuLeftColumn" class="MainMenuLeftColumn">
+                        <div id="PlayerImageName" class="PlayerImageName">
+                            <div id="PlayerNameContainer" class="PlayerNameContainer">
+                                <div id="PlayerName" class="PlayerName">
+                                    
+                                </div>
+                            </div>
+                            <div id="PlayerImageContainer" class="PlayerImageContainer">
+                                <div id="PlayerImage" class="PlayerName">
+                                    
+                                </div>
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonSkins" class="MainMenuLeftColumnButton MainMenuLeftColumnButton1">
+                            <div id="Button1Name" class="ButtonName">
+                                Skins
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonLobbies" class="MainMenuLeftColumnButton MainMenuLeftColumnButton2">
+                            <div id="Button1Name" class="ButtonName">
+                                Lobbies
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonFriends" class="MainMenuLeftColumnButton MainMenuLeftColumnButton3">
+                            <div id="Button1Name" class="ButtonName">
+                                Friends
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonNews" class="MainMenuLeftColumnButton MainMenuLeftColumnButton4">
+                            <div id="Button1Name" class="ButtonName">
+                                News
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonSettings" class="MainMenuLeftColumnButton MainMenuLeftColumnButton5">
+                            <div id="Button1Name" class="ButtonName">
+                                Settings
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonSignOut" class="MainMenuLeftColumnButton MainMenuLeftColumnButton6">
+                            <div id="Button1Name" class="ButtonName">
+                                Sign Out
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="Middle" class="Middle"></div>
+                <div id="RightColumn" class="RightColumn"></div>
+            </div>
+        </div>
+    </div>
+    <script src = "javascript/main.js"></script>
+</body>
+</html>
