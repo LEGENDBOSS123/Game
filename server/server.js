@@ -393,7 +393,6 @@ const player = class{
     }
     json(){
         const self = this;
-        console.log({"id":self.playerid,"team":self.team,"username":self.username,"experience":self.experience,"skin":self.skin})
         return {"id":self.playerid,"team":self.team,"username":self.username,"experience":self.experience,"skin":self.skin};
     };
     reset(){
@@ -637,11 +636,11 @@ const ratelimit = class{
         self.count = 0;
     };
     call(){
+        const self = this;
         if(self.maxcount == -1){
             return true;
         }
-        const self = this;
-        if(Date.now()-this.lasttimestamp>self.time+Math.min(self.punishtime,self.maxpunish*self.self.punish)){
+        if(Date.now()-this.lasttimestamp>self.time+Math.min(self.punishtime,self.maxpunish*self.punish)){
             this.lasttimestamp = Date.now();
             self.count = 0;
             self.punishtime = 0;

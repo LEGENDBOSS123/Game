@@ -15,6 +15,15 @@
                     <button id="AlertBoxButton" class="AlertBoxButton">Okay</button>
                 </div>
             </div>
+            <div id="PromptBoxScreen" style="display: none;" class="PromptBoxScreen">
+                <div id="PromptBoxBackground" class="PromptBoxBackground"></div>
+                <div id="PromptBoxContainer" class="PromptBoxContainer">
+                    <div id="PromptBoxTextBackground" class="PromptBoxTextBackground"></div>
+                    <div id="PromptBoxText" class="PromptBoxText"></div>
+                    <input id="PromptBoxInput" class="PromptBoxInput"></button>
+                    <button id="PromptBoxButton" class="PromptBoxButton">Okay</button>
+                </div>
+            </div>
             <div id="LoginScreen" class="Center LoginScreen" style="display:none;">
                 <div id="LoginAccount" class="LoginAccount">
                     <form id="LoginForm" class="Form" action="javascript:void(0);" onsubmit="">
@@ -41,7 +50,7 @@
                     </form>
                 </div>
             </div>
-            <div id="MenuWrapper" class="MenuWrapper">
+            <div id="MenuWrapper" class="MenuWrapper" style="display:none;">
                 <div id="LeftColumn" class="LeftColumn">
                     <div id="MainMenuLeftColumn" class="MainMenuLeftColumn">
                         <div id="PlayerImageName" class="PlayerImageName">
@@ -56,40 +65,124 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonSkins" class="MainMenuLeftColumnButton MainMenuLeftColumnButton1">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonSkins" class="MainMenuButton MainMenuButton6">
+                            <div class="ButtonName">
                                 Skins
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonLobbies" class="MainMenuLeftColumnButton MainMenuLeftColumnButton2">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonLobbies" class="MainMenuButton MainMenuButton5">
+                            <div class="ButtonName">
                                 Lobbies
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonFriends" class="MainMenuLeftColumnButton MainMenuLeftColumnButton3">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonFriends" class="MainMenuButton MainMenuButton4">
+                            <div class="ButtonName">
                                 Friends
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonNews" class="MainMenuLeftColumnButton MainMenuLeftColumnButton4">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonNews" class="MainMenuButton MainMenuButton3">
+                            <div class="ButtonName">
                                 News
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonSettings" class="MainMenuLeftColumnButton MainMenuLeftColumnButton5">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonSettings" class="MainMenuButton MainMenuButton2">
+                            <div class="ButtonName">
                                 Settings
                             </div>
                         </div>
-                        <div id="MainMenuLeftColumnButtonSignOut" class="MainMenuLeftColumnButton MainMenuLeftColumnButton6">
-                            <div id="Button1Name" class="ButtonName">
+                        <div id="MainMenuLeftColumnButtonSignOut" class="MainMenuButton MainMenuButton1">
+                            <div class="ButtonName">
                                 Sign Out
                             </div>
                         </div>
                     </div>
+                    <div id="LobbiesLeftColumn" class="LobbiesLeftColumn">
+                        <div id="LobbiesLeftColumnJoinLobby" class="MainMenuButton MainMenuButton3">
+                            <div class="ButtonName">
+                                Join Lobby
+                            </div>
+                        </div>
+                        <div id="LobbiesLeftColumnRefresh" class="MainMenuButton MainMenuButton2">
+                            <div class="ButtonName">
+                                Refresh
+                            </div>
+                        </div>
+                        <div id="MainMenuLeftColumnButtonLobbiesBack" class="MainMenuButton MainMenuButton1">
+                            <div class="ButtonName">
+                                Back
+                            </div>
+                        </div>
+                    </div>
+                    <div id="InLobbyLeftColumn" class="InLobbyLeftColumn">
+                        <div id="InLobbyLeave" class="MainMenuButton MainMenuButton1">
+                            <div class="ButtonName">
+                                Leave
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div id="Middle" class="Middle"></div>
-                <div id="RightColumn" class="RightColumn"></div>
+                <div id="Middle" class="Middle">
+                    <div id="MiddleLobbiesContainer" class="MiddleLobbiesContainer">
+                        <div id="MiddleLobbiesTopBar" class="MiddleLobbiesTopBar">
+                            <div id="MiddleLobbiesTopBarTextContainer" class="MiddleLobbiesTopBarTextContainer">
+                                <div id="MiddleLobbiesTopBarText" class="MiddleLobbiesTopBarText">
+                                    Lobbies
+                                </div>
+                            </div>
+                        </div>
+                        <div id="MiddleLobbiesMiddle" class="MiddleLobbiesMiddle">
+                            <div id="MiddleLobbiesList" class="MiddleLobbiesList"></div>
+                            <div id="MiddleLobbiesMiddleTextContainer" class="MiddleLobbiesMiddleTextContainer" style="display:none;">
+                                <div id="MiddleLobbiesMiddleText" class="MiddleLobbiesMiddleText">
+                                    No Lobbies
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="RightColumn" class="RightColumn">
+                    <div id="RightColumnLobbiesContainer" class="RightColumnLobbiesContainer">
+                        <div id="CreateLobbyButton" class="MainMenuButton MainMenuButton1">
+                            <div class="ButtonName">
+                                Create Lobby
+                            </div>
+                        </div>
+                        <div id="CreateLobbyScreen" class="CreateLobbyScreen">
+                            <div id="CreateLobbyTopBar" class="CreateLobbyTopBar">
+                                <div id="CreateLobbyTopBarTextContainer" class="CreateLobbyTopBarTextContainer">
+                                    <div id="CreateLobbyTopBarText" class="CreateLobbyTopBarText">
+                                        Lobby Info
+                                    </div>
+                                </div>
+                            </div>
+                            <input id="CreateLobbyName" value = "My Lobby" class="CreateLobbyName Center"></input>
+                            <input id="CreateLobbyPassword" class="CreateLobbyPassword Center"></input>
+                            <input id="CreateLobbyMaxPlayers" value = "6" class="CreateLobbyMaxPlayers Center"></input>
+                            <div id="CreateLobbyNameLabelContainer" class="CreateLobbyNameLabelContainer">
+                                <div id="CreateLobbyNameLabel" class="CreateLobbyLabel Center">
+                                    Lobby Name
+                                </div>
+                            </div>
+                            <div id="CreateLobbyPasswordLabelContainer" class="CreateLobbyPasswordLabelContainer">
+                                <div id="CreateLobbyPasswordLabel" class="CreateLobbyLabel Center">
+                                    Lobby Password
+                                </div>
+                            </div>
+                            <div id="CreateLobbyMaxPlayersLabelContainer" class="CreateLobbyMaxPlayersLabelContainer">
+                                <div id="CreateLobbyMaxPlayersLabel" class="CreateLobbyLabel Center">
+                                    Max Players
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="ChatContainer" class="ChatContainer">
+                        <div id="ChatBackground" class="ChatBackground">
+                            <div id="ChatMessagesContainer" class="ChatMessagesContainer"></div>
+                        </div>
+                        <input id="ChatInput" type="text" contentEditable=true class="ChatInput Center">
+                    </input>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

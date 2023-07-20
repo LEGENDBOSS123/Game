@@ -114,7 +114,22 @@
     position: absolute;
     z-index:999;
 }
+.PromptBoxScreen {
+    width:100%;
+    height:100%;
+    position: absolute;
+    z-index:1000;
+}
 .AlertBoxBackground {
+    width:100%;
+    height:100%;
+    position: inherit;
+    display: inherit;
+    opacity:75%;
+    background-color: #000000;
+    z-index: inherit;
+}
+.PromptBoxBackground {
     width:100%;
     height:100%;
     position: inherit;
@@ -133,7 +148,27 @@
     background-color:#047984;
     z-index: inherit;
 }
+.PromptBoxContainer {
+    width:50%;
+    height:50%;
+    position: inherit;
+    display: inherit;
+    top:25%;
+    left:25%;
+    background-color:#047984;
+    z-index: inherit;
+}
 .AlertBoxText {
+    width:70%;
+    height:40%;
+    left:15%;
+    top:15%;
+    position: inherit;
+    display: inherit;
+    z-index: inherit;
+    overflow-wrap: break-word;
+}
+.PromptBoxText {
     width:70%;
     height:40%;
     left:15%;
@@ -154,6 +189,17 @@
     z-index: inherit;
     overflow-wrap: break-word;
 }
+.PromptBoxTextBackground {
+    width:80%;
+    height:50%;
+    left:10%;
+    top:10%;
+    position: inherit;
+    display: inherit;
+    background-color:#C9CEBD;
+    z-index: inherit;
+    overflow-wrap: break-word;
+}
 .AlertBoxButton {
     width:80%;
     height:20%;
@@ -163,7 +209,32 @@
     position: inherit;
     display: inherit;
     background-color:#5adbb5;
-    z-index: inherit;;
+    z-index: inherit;
+}
+.PromptBoxButton {
+    width:20%;
+    height:20%;
+    bottom:10%;
+    right:10%;
+    cursor: grab;
+    position: inherit;
+    display: inherit;
+    background-color:#5adbb5;
+    z-index: inherit;
+}
+.PromptBoxInput {
+    width:55%;
+    height:20%;
+    bottom:10%;
+    left:10%;
+    text-align: center;
+    position: inherit;
+    display: inherit;
+    background-color:#C9CEBD;
+    z-index: inherit;
+    border-style: none;
+    padding: 0;
+
 }
 .LeftColumn {
     position: inherit;
@@ -173,14 +244,14 @@
 .RightColumn {
     position: inherit;
     display: inherit;
-    width: 20%;
+    width: 30%;
     height: 100%;
     right: 0%;
 }
 .Middle {
     position: inherit;
     display: inherit;
-    width: 60%;
+    width: 50%;
     height: 100%;
     left: 20%;
 }
@@ -239,47 +310,335 @@
     top:20%;
     font-size:25px;
 }
-.MainMenuLeftColumnButton {
+.MainMenuButton {
     position: inherit;
     display: inherit;
     cursor: grab;
     width:90%;
     height:8%;
+    user-select: none;
     background-color:#5adbb5;
 }
-.MainMenuLeftColumnButton1 {
+.MainMenuButton6 {
     position: inherit;
     display: inherit;
     bottom:55%;
     left:5%;
 }
-.MainMenuLeftColumnButton2 {
+.MainMenuButton5 {
     position: inherit;
     display: inherit;
     bottom:45%;
     left:5%;
 }
-.MainMenuLeftColumnButton3 {
+.MainMenuButton4 {
     position: inherit;
     display: inherit;
     bottom:35%;
     left:5%;
 }
-.MainMenuLeftColumnButton4 {
+.MainMenuButton3 {
     position: inherit;
     display: inherit;
     bottom:25%;
     left:5%;
 }
-.MainMenuLeftColumnButton5 {
+.MainMenuButton2 {
     position: inherit;
     display: inherit;
     bottom:15%;
     left:5%;
 }
-.MainMenuLeftColumnButton6 {
+.MainMenuButton1 {
     position: inherit;
     display: inherit;
     bottom:5%;
     left:5%;
+}
+.LobbiesLeftColumn {
+    position: inherit;
+    display: inherit;
+    width: 100%;
+    height: 100%;
+}
+.MiddleLobbiesContainer {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:94%;
+    top: 2%;
+    background-color:#398d8a;
+}
+.MiddleLobbiesTopBar {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:10%;
+    background-color:#026871;
+}
+.MiddleLobbiesMiddle {
+    position: inherit;
+    display: inherit;
+    width:90%;
+    height:80%;
+    top: 15%;
+    left: 5%;
+    background-color:#C9CEBD;
+}
+.MiddleLobbiesTopBarTextContainer {
+    position: inherit;
+    display: inherit;
+    width:50%;
+    height:80%;
+    top: 10%;
+    left: 5%;
+    background-color:#027c87;
+}
+.MiddleLobbiesTopBarText {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    top: 12%;
+    font-size:30px;
+}
+.MiddleLobbiesMiddleTextContainer {
+    position: inherit;
+    display: inherit;
+    width:30%;
+    height:10%;
+    top: 45%;
+    left: 35%;
+}
+.MiddleLobbiesMiddleText {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    top: 12%;
+    font-size:30px;
+}
+.RightColumnLobbiesContainer {
+    position: inherit;
+    display: inherit;
+    width: 100%;
+    height: 100%;
+}
+.CreateLobbyScreen {
+    position: inherit;
+    display: inherit;
+    width: 94%;
+    height: 82%;
+    top: 2%;
+    left: 3%;
+    background-color:#398d8a;
+}
+.CreateLobbyTopBar {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:11.5%;
+    background-color:#026871;
+}
+.CreateLobbyTopBarText {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    top: 12%;
+    font-size:30px;
+}
+.CreateLobbyTopBarTextContainer {
+    position: inherit;
+    display: inherit;
+    width:80%;
+    height:80%;
+    top: 10%;
+    left: 10%;
+    background-color:#027c87;
+}
+.CreateLobbyName {
+    position: inherit;
+    display: inherit;
+    width:80%;
+    height:5%;
+    top: 25%;
+    left: 10%;
+    background-color:#C9CEBD;
+}
+.CreateLobbyPassword {
+    position: inherit;
+    display: inherit;
+    width:80%;
+    height:5%;
+    top: 55%;
+    left: 10%;
+    background-color:#C9CEBD;
+}
+.CreateLobbyMaxPlayers {
+    position: inherit;
+    display: inherit;
+    width:80%;
+    height:5%;
+    top: 85%;
+    left: 10%;
+    background-color:#C9CEBD;
+}
+.CreateLobbyNameLabelContainer {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:5%;
+    top: 20%;
+}
+.CreateLobbyPasswordLabelContainer {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:5%;
+    top: 50%;
+}
+.CreateLobbyMaxPlayersLabelContainer {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:5%;
+    top: 80%;
+}
+.CreateLobbyLabel {
+    position: inherit;
+    display: inherit;
+    width:100%;
+    height:2%;
+    top: 10%;
+}
+.ChatContainer {
+    position: inherit;
+    display: inherit;
+    width: 94%;
+    height: 94%;
+    left:3%;
+    top:2%;
+    background-color: #026871;
+}
+.ChatMessagesContainer {
+    position: inherit;
+    display: inherit;
+    width: 94%;
+    height: 94%;
+    left:3%;
+    top:2%;
+    overflow: auto;
+}
+.ChatBackground {
+    position: inherit;
+    display: inherit;
+    width:94%;
+    left:3%;
+    height:85%;
+    top: 3%;
+    background-color: #C9CEBD;
+}
+.ChatInput {
+    position: inherit;
+    display: inherit;
+    width:94%;
+    padding: 0%;
+    border-style: none;
+    left:3%;
+    height:5%;
+    bottom: 3%;
+    line-height: 25px;
+    background-color: white;
+}
+.ChatMessage {
+    position: relative;
+    display: inherit;
+    width: 100%;
+    overflow-wrap: anywhere;
+    text-align: left;
+    padding-top: 5%;
+    line-height: 18px;
+}
+.ChatMessagesContainer::-webkit-scrollbar {
+    width:6px;
+}
+.ChatMessagesContainer::-webkit-scrollbar-track {
+    background-color: #FFFFFF;
+}
+.ChatMessagesContainer::-webkit-scrollbar-thumb {
+    background-color: #000000;
+}
+.ChatText {
+    position: inherit;
+    font-size: 14px;
+}
+.ChatUsername {
+    padding-top:2%;
+    position: inherit;
+    font-size: 18px;
+}
+.ChatLine {
+    position: inherit;
+    width:100%;
+    height:1px;
+    background-color: black;
+}
+.InLobbyLeftColumn {
+    position: inherit;
+    display: inherit;
+    width: 100%;
+    height: 100%;   
+}
+.ChatAction {
+    text-align: center;
+    background-color:#a4aa97;
+}
+.MiddleLobbiesList {
+    position: inherit;
+    display: inherit;
+    width: 94%;
+    height: 94%;
+    left:3%;
+    top:2%;
+    overflow-y: auto;
+}
+.MiddleLobbiesList::-webkit-scrollbar {
+    width:6px;
+}
+.MiddleLobbiesList::-webkit-scrollbar-track {
+    background-color: #FFFFFF;
+}
+.MiddleLobbiesList::-webkit-scrollbar-thumb {
+    background-color: #000000;
+}
+.LobbyElement {
+    position: relative;
+    display: inherit;
+    width: 100%;
+    overflow-wrap: anywhere;
+    text-align: left;
+    margin-top: 1%;
+    background-color:#a4aa97;
+    cursor: grab;
+    height:7.5%;
+    user-select: none;
+}
+.LobbyName {
+    position: inherit;
+    width:20%;
+    height:100%;
+    top:20%;
+    left:5%;
+}
+.LobbyPlayers {
+    position: absolute;
+    width:10%;
+    height:100%;
+    top: 20%;
+    left: 40%;
+}
+.LobbyPassword {
+    position: absolute;
+    width:20%;
+    height:100%;
+    top: 20%;
+    left: 75%;
 }

@@ -18,11 +18,17 @@ const Game = class{
         self.sessionid = ["",0];
         self.inlobby = false;
         self.state = "login";
+        self.inchat = false;
+        self.ineditor = false;
+        self.previousState = self.state;
         self.onlogin = function(){};
         self.lobbydata = {};
         self.recievepacketid = {};
         self.sendpacketid = {};
         self.recievehandler = {};
+        self.pointerlobbyid = -1;
+        self.pointerlobbyhaspass = false;
+        self.lobbyclicktimestamp = 0;
         
     };
     unfocusAll(){
@@ -48,7 +54,6 @@ const Game = class{
         self.getId("CreateAccountForm").onsubmit = function(){
             self.username = self.getId("CreateAccountTextbox").value;
             self.password = self.getId("CreateAccountPasswordbox").value;
-            console.log("E")
             if(!(self.username.length+self.password.length)){
                 return;
             }
@@ -71,43 +76,292 @@ const Game = class{
         self.getId("AlertBoxButton").onclick = function(){
             self.getId("AlertBoxScreen").style.display = "none";
         };
+        self.getId("PromptBoxButton").onclick = function(){
+            self.getId("PromptBoxScreen").style.display = "none";
+        };
+        self.getId("MainMenuLeftColumnButtonSignOut").onclick = function(){
+            self.updateState("login");
+        };
+        self.getId("MainMenuLeftColumnButtonLobbies").onclick = function(){
+            self.updateState("lobbies");
+        };
+        self.getId("MainMenuLeftColumnButtonLobbiesBack").onclick = function(){
+            self.updateState("main menu");
+        };
+        self.getId("CreateLobbyButton").onclick = function(){
+            var lobbyname = self.getId("CreateLobbyName").value;
+            var lobbypassword = self.getId("CreateLobbyPassword").value;
+            var maxplayers = parseInt(self.getId("CreateLobbyMaxPlayers").value);
+            if(self.wss){
+                return;
+            }
+            if(maxplayers<=0 || maxplayers>8){
+                self.alertBox("Max Players must be an integer between 1 and 8 inclusive.");
+                return;
+            }
+            else if(lobbypassword.length>20){
+                self.alertBox("The password cannot be more than 20 digits.");
+                return;
+            }
+            else if(lobbyname.length<1 || lobbyname.length>35){
+                self.alertBox("The roomname must be between 1 and 35 digits inclusive.");
+                return;
+            }
+            self.createlobby(lobbyname,lobbypassword,maxplayers);
+        };
+        self.getId("ChatInput").onfocus = function(){
+            self.inchat = true;
+        };
+        self.getId("ChatInput").onblur = function(){
+            self.inchat = false;
+
+        }
+        self.getId("ChatInput").onkeydown = function(e){
+            if(self.inchat && self.wss){
+                if(e.isTrusted && e.key == "Enter"){
+                    if(self.getId("ChatInput").value.length>0){
+                        self.send([self.sendpacketid.chatmsg,self.getId("ChatInput").value]);
+                    }
+                    self.getId("ChatInput").value = "";
+                    self.unfocusAll();
+                }
+            }
+        }
+        self.getId("PromptBoxInput").onkeydown = function(e){
+            if(e.isTrusted && e.key == "Enter"){
+                self.getId("PromptBoxButton").click();
+                self.unfocusAll();
+            }
+        }
+        document.onkeydown = function(e){
+            if(!self.inchat && !self.ineditor && self.wss){
+                if(e.isTrusted && e.key == "Enter"){
+                    self.getId("ChatInput").focus();
+                }
+            }
+        }
+        self.getId("InLobbyLeave").onclick = function(){
+            if(self.wss){
+                if(self.getId("InLobbyLeave").children[0].textContent == "Sure?"){
+                    self.send([0]);
+                    return;
+                }
+                self.getId("InLobbyLeave").children[0].textContent = "Sure?";
+                setTimeout(function(){self.getId("InLobbyLeave").children[0].textContent = "Leave"},500);
+            }
+        };
+        self.getId("LobbiesLeftColumnJoinLobby").onclick = function(){
+            if(self.pointerlobbyid>=0){
+                if(!self.pointerlobbyhaspass){
+                    self.joinlobby(self.pointerlobbyid,"");
+                }
+                else{
+                    self.promptBox("This lobby requires a password. Enter a password below.").then(function(data){
+                        self.joinlobby(self.pointerlobbyid,data);
+                    });
+                }
+            }
+        };
+        self.getId("LobbiesLeftColumnRefresh").onclick = function(){
+            self.displayLobbies();
+        };
     };
     updateState(text){
         const self = this;
+        self.previousState = self.state;
         self.unfocusAll();
         if(text){
             self.state = text;
         }
         if(self.state == "login"){
             self.getId("LoginScreen").style.display = "block";
+            self.getId("MenuWrapper").style.display = "none";
         }
         else{
             self.getId("LoginScreen").style.display = "none";
+            self.getId("MenuWrapper").style.display = "block";
         }
         if(self.state == "main menu"){
-            self.getId("MenuWrapper").style.display = "block";
+            self.getId("MainMenuLeftColumn").style.display = "block";
             self.getId("PlayerName").textContent = self.username;
             if(self.accountdata.skins){
-                self.getId("PlayerImage").style.backgroundColor = "rgb("+self.accountdata.skins[0].toString()+")";
+                //self.getId("PlayerImage").style.backgroundColor = "rgb("+self.accountdata.skins[0].toString()+")";
             }
         }
         else{
-            self.getId("MenuWrapper").style.display = "none";
+            self.getId("MainMenuLeftColumn").style.display = "none";
+        }
+        if(self.state == "lobbies"){
+            self.getId("LobbiesLeftColumn").style.display = "block";
+            self.getId("MiddleLobbiesContainer").style.display = "block";
+            self.getId("RightColumnLobbiesContainer").style.display = "block";
+            self.displayLobbies();
+        }
+        else{
+            self.getId("LobbiesLeftColumn").style.display = "none";
+            self.getId("MiddleLobbiesContainer").style.display = "none";
+            self.getId("RightColumnLobbiesContainer").style.display = "none";
+        }
+        if(self.state == "inlobby"){
+            self.getId("InLobbyLeftColumn").style.display = "block";
+            self.getId("ChatContainer").style.display = "block";
+            self.resetLobby();
+        }
+        else{
+            self.getId("InLobbyLeftColumn").style.display = "none";
+            self.getId("ChatContainer").style.display = "none";
         }
     };
+    sanitize(text){
+        return text.replace(/&/g, '&amp;').replace(/>/g, '&gt;').replace(/</g, '&lt;');
+    }
     alertBox(text){
         const self = this;
-        self.getId("AlertBoxText").textContent = text;
-        self.getId("AlertBoxScreen").style.display = "block";
+        if(self.getId("AlertBoxScreen").style.display!="block"){
+            self.getId("AlertBoxText").textContent = text;
+            self.getId("AlertBoxScreen").style.display = "block";
+            self.unfocusAll();
+        }
+    };
+    async promptBox(text){
+        const self = this;
+        self.getId("PromptBoxText").textContent = text;
+        self.getId("PromptBoxScreen").style.display = "block";
+        self.getId("PromptBoxInput").value = "";
         self.unfocusAll();
+        return new Promise(function(res,rej){
+            self.getId("PromptBoxButton").addEventListener('click',function(e) {
+                res(self.getId("PromptBoxInput").value);
+            }, {once: true})
+        });
+    }
+    displayChatMessage(username,text){
+        const self = this;
+        var chatelement = document.createElement("div");
+        chatelement.classList = "ChatMessage";
+        var usernameelement = document.createElement("div");
+        usernameelement.textContent = username+" : ";
+        usernameelement.classList = "ChatUsername";
+        var textelement = document.createElement("div");
+        textelement.textContent = text;
+        textelement.classList = "ChatText";
+        var line = document.createElement("div");
+        line.classList = "ChatLine";
+
+        var scrolldown = false;
+        if(Math.abs(self.getId("ChatMessagesContainer").scrollHeight-self.getId("ChatMessagesContainer").clientHeight-self.getId("ChatMessagesContainer").scrollTop)<1){
+            scrolldown = true;
+        }
+        chatelement.appendChild(line);
+        chatelement.appendChild(usernameelement);
+        chatelement.appendChild(textelement);
+        self.getId("ChatMessagesContainer").appendChild(chatelement);
+        if(scrolldown){
+            self.getId("ChatMessagesContainer").scrollTop = self.getId("ChatMessagesContainer").scrollHeight;
+        }
+    };
+    async displayLobbies(){
+        const self = this;
+        var lobbies = await self.getlobbylist();
+        var keys = Object.keys(lobbies);
+        while(self.getId("MiddleLobbiesList").children.length){
+            self.getId("MiddleLobbiesList").removeChild(self.getId("MiddleLobbiesList").firstChild);
+        }
+        if(keys.length == 0){
+            self.getId("MiddleLobbiesMiddleTextContainer").style.display = "block";
+            return;
+        }
+        else{
+            self.getId("MiddleLobbiesMiddleTextContainer").style.display = "none";
+        }
+        for(var i = 0;i<keys.length;i++){
+            var element = document.createElement("div");
+            element.lobbyid = keys[i];
+            element.haspass = lobbies[keys[i]].haspass;
+            element.classList = "LobbyElement";
+            var lobbyname = document.createElement("div");
+            lobbyname.classList = "LobbyName";
+            lobbyname.textContent = lobbies[keys[i]].lobbyname;
+            var players = document.createElement("div");
+            players.classList = "LobbyPlayers";
+            players.textContent = lobbies[keys[i]].players+"/"+lobbies[keys[i]].maxplayers;
+
+            var password = document.createElement("div");
+            password.classList = "LobbyPassword";
+            password.textContent = (lobbies[keys[i]].haspass?"Passworded":"No Password");
+
+            element.appendChild(lobbyname);
+            element.appendChild(players);
+            element.appendChild(password);
+
+            element.onclick = function(){
+                if(this.lobbyid == self.pointerlobbyid){
+                    if(Date.now()-self.lobbyclicktimestamp<500){
+                        if(!this.haspass){
+                            self.promptBox("This lobby requires a password. Enter a password below.").then(function(data){
+                                self.joinlobby(self.pointerlobbyid,data);
+                            });
+                            return;
+                        }
+                        else{
+                            self.promptBox("This lobby requires a password. Enter a password below.").then(function(data){
+                                self.joinlobby(self.pointerlobbyid,data);
+                            });
+                        }
+                    }
+                }
+                self.lobbyclicktimestamp = Date.now();
+                self.pointerlobbyhaspass = this.haspass;
+                self.pointerlobbyid = this.lobbyid;
+                for(var i = 0;i<self.getId("MiddleLobbiesList").children.length;i++){
+                    if(self.getId("MiddleLobbiesList").children[i].lobbyid == self.pointerlobbyid){
+                        self.getId("MiddleLobbiesList").children[i].style.backgroundColor = "white";
+                    }
+                    else{
+                        self.getId("MiddleLobbiesList").children[i].style.backgroundColor = "#a4aa97";
+                    }
+                }
+            };
+
+            self.getId("MiddleLobbiesList").appendChild(element);
+        }
+    }
+    displayPlayerAction(username,action,action2=""){
+        const self = this;
+        var chatelement = document.createElement("div");
+        chatelement.classList = "ChatMessage";
+        var textelement = document.createElement("div");
+        textelement.textContent = username+" has "+action+" the lobby"+action2+".";
+        textelement.classList = "ChatAction";
+
+        var scrolldown = false;
+        if(Math.abs(self.getId("ChatMessagesContainer").scrollHeight-self.getId("ChatMessagesContainer").clientHeight-self.getId("ChatMessagesContainer").scrollTop)<1){
+            scrolldown = true;
+        }
+        chatelement.appendChild(textelement);
+        self.getId("ChatMessagesContainer").appendChild(chatelement);
+        if(scrolldown){
+            self.getId("ChatMessagesContainer").scrollTop = self.getId("ChatMessagesContainer").scrollHeight;
+        }
     };
     getId(id){
         const self = this;
         return document.getElementById(self.idprefix+id);
     };
+    resetLobby(){
+        const self = this;
+        while(self.getId("ChatMessagesContainer").children.length){
+            self.getId("ChatMessagesContainer").removeChild(self.getId("ChatMessagesContainer").firstChild);
+        }
+        while(self.getId("MiddleLobbiesList").children.length){
+            self.getId("MiddleLobbiesList").removeChild(self.getId("MiddleLobbiesList").firstChild);
+        }
+    };
     setuprecievehandler(){
         const self = this;
         self.recievehandler[self.recievepacketid.disconnect] = function(jsondata){
+            self.alertBox("You left the lobby.");
+            self.updateState(self.previousState);
             self.disconnect();
         };
         self.recievehandler[self.recievepacketid.roomjoin] = function(jsondata){};
@@ -115,17 +369,28 @@ const Game = class{
         self.recievehandler[self.recievepacketid.movementinputs] = function(jsondata){};
         self.recievehandler[self.recievepacketid.gamestart] = function(jsondata){};
         self.recievehandler[self.recievepacketid.gameend] = function(jsondata){};
-        self.recievehandler[self.recievepacketid.chatmsg] = function(jsondata){};
+        self.recievehandler[self.recievepacketid.chatmsg] = function(jsondata){
+            self.displayChatMessage(self.lobbydata.playerids[jsondata[0]].username,jsondata[1]);
+        };
         self.recievehandler[self.recievepacketid.playerjoin] = function(jsondata){
             self.lobbydata.playerids[jsondata[0].id] = jsondata[0];
+            self.displayPlayerAction(jsondata[0].username,"joined");
         };
         self.recievehandler[self.recievepacketid.timesync] = function(jsondata){
             self.packetdelay = jsondata[0];
             self.send([self.sendpacketid.timesync])
         };
         self.recievehandler[self.recievepacketid.playerleaves] = function(jsondata){
+            var username = self.lobbydata.playerids[jsondata[0]].username;
             delete self.lobbydata.playerids[jsondata[0]];
+            var host = self.lobbydata.hostid;
             self.lobbydata.hostid = jsondata[1];
+            if(jsondata[1] == host){
+                self.displayPlayerAction(username,"left");
+            }
+            else{
+                self.displayPlayerAction(username,"left"," and "+self.lobbydata.playerids[self.lobbydata.hostid].username+" is now the host");
+            }
             if(self.lobbydata.myid == jsondata[1]){
                 self.lobbydata.ishost = true;
             }
@@ -149,8 +414,20 @@ const Game = class{
             for(var i = 0;i<playeridlist.length;i++){
                 self.lobbydata.playerids[playeridlist[i].id] = playeridlist[i];
             }
+            self.updateState("inlobby");
         };
-        self.recievehandler[self.recievepacketid.error] = function(jsondata){};
+        self.recievehandler[self.recievepacketid.error] = function(jsondata){
+            if(jsondata[0] == self.sendpacketid.roomcreate){
+                self.updateState(self.previousState);
+                self.alertBox("Failed to create lobby.");
+                self.disconnect();
+            }
+            else if(jsondata[0] == self.sendpacketid.roomjoin){
+                self.updateState(self.previousState);
+                self.alertBox("Failed to join lobby.");
+                self.disconnect();
+            }
+        };
         self.recievehandler[self.recievepacketid.ratelimit] = function(jsondata){};
         self.recievehandler[self.recievepacketid.login] = function(jsondata){
             self.onlogin();
@@ -286,12 +563,12 @@ const Game = class{
     }
     joinlobby(lobbyid,pass){
         const self = this;
-        if(self.wss || !self.loggedin){
+        if(self.wss || !self.loggedin || !Number.isInteger(parseInt(lobbyid))){
             return false;
         }
         self.startwss();
         self.onlogin = function(){
-            self.send([self.sendpacketid.roomjoin,lobbyid,pass]);
+            self.send([self.sendpacketid.roomjoin,parseInt(lobbyid),pass]);
         };
         return true;
     };
