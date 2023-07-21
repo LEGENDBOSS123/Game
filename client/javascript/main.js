@@ -1,4 +1,3 @@
-const wsslink = "ws://localhost:443";
 
 
 const Game = class{
@@ -29,6 +28,8 @@ const Game = class{
         self.pointerlobbyid = -1;
         self.pointerlobbyhaspass = false;
         self.lobbyclicktimestamp = 0;
+        self.wsslink = "ws://localhost:443";
+
         
     };
     unfocusAll(){
@@ -195,6 +196,9 @@ const Game = class{
             self.getId("LobbiesLeftColumn").style.display = "block";
             self.getId("MiddleLobbiesContainer").style.display = "block";
             self.getId("RightColumnLobbiesContainer").style.display = "block";
+            self.getId("CreateLobbyName").value = "My Lobby";
+            self.getId("CreateLobbyPassword").value = "";
+            self.getId("CreateLobbyMaxPlayers").value = "6";
             self.displayLobbies();
         }
         else{
@@ -288,7 +292,7 @@ const Game = class{
 
             var password = document.createElement("div");
             password.classList = "LobbyPassword";
-            password.textContent = (lobbies[keys[i]].haspass?"Passworded":"No Password");
+            password.textContent = (lobbies[keys[i]].haspass?"Has Password":"No Password");
 
             element.appendChild(lobbyname);
             element.appendChild(players);
@@ -298,9 +302,7 @@ const Game = class{
                 if(this.lobbyid == self.pointerlobbyid){
                     if(Date.now()-self.lobbyclicktimestamp<500){
                         if(!this.haspass){
-                            self.promptBox("This lobby requires a password. Enter a password below.").then(function(data){
-                                self.joinlobby(self.pointerlobbyid,data);
-                            });
+                            self.joinlobby(self.pointerlobbyid,"");
                             return;
                         }
                         else{
@@ -350,6 +352,7 @@ const Game = class{
     };
     resetLobby(){
         const self = this;
+        self.pointerlobbyid = -1;
         while(self.getId("ChatMessagesContainer").children.length){
             self.getId("ChatMessagesContainer").removeChild(self.getId("ChatMessagesContainer").firstChild);
         }
@@ -446,6 +449,8 @@ const Game = class{
                 self.recievepacketid = settings.recievepacketid;
                 self.sendpacketid = settings.sendpacketid;
                 self.timesync_timelimit = settings.timesync_timelimit;
+                self.wsslink = settings.wsslink.replaceAll("http","ws");
+                open(settings.wsslink)
                 self.setuprecievehandler();
             }
         }).catch(function(){
@@ -583,9 +588,13 @@ const Game = class{
         };
         return true;
     };
-    startwss(onopenfunction = function(){}){
+    startwss(){
         const self = this;
-        var wss = new WebSocket(wsslink);
+        if(self.wss){
+            return;
+        }
+        self.wss = 1;
+        var wss = new WebSocket(self.wsslink);
         wss.onmessage = function(packet){
             try{
                 var jsondata = JSON.parse(packet.data);

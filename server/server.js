@@ -3,8 +3,20 @@ const fs = require("fs");
 const fsp = fs.promises;
 const websocket = require("ws");
 const crypto = require("crypto");
-const host = "localhost";
-const port = 8000;
+
+
+
+const host = "0.0.0.0";
+const port = 8080;
+//const wsslink = "ws://localhost:443";
+const wsslink = "https://5518-2601-646-9e00-28d-19f1-4dcc-2950-1789.ngrok-free.app";
+const wssport = 556;
+
+
+
+
+
+
 
 const alldirectories = ["/data","/accounts"];
 const allfiles = ["/data/maxaccountid"];
@@ -165,7 +177,6 @@ const lobby = class{
             self.playerids[keys[0]].ishost = true;
         }
         self.broadcast([sendpacketid.playerleaves,playerid,self.hostid,self.currentframe]);
-        
     };
     playerjoin(player){
         const self = this;
@@ -759,7 +770,7 @@ const requestListener = function(req,res){
             }
             else if(body.type == "getsettings"){
                 res.setHeader("Content-Type","text/json");
-                res.end(JSON.stringify({"success":true,"sendpacketid":recievepacketid,"recievepacketid":sendpacketid,"timesync_timelimit":timesync_timelimit}));
+                res.end(JSON.stringify({"success":true,"sendpacketid":recievepacketid,"recievepacketid":sendpacketid,"timesync_timelimit":timesync_timelimit,"wsslink":wsslink}));
             }
             else{
                 res.setHeader("Content-Type","text/json");
@@ -771,14 +782,15 @@ const requestListener = function(req,res){
 };
 
 const server = http.createServer(requestListener);
+
 server.listen(port,host,function(){console.log("Server started.")});
 
 
 
 
-
-const wss = new websocket.Server({port: 443});
+const wss = new websocket.Server({port: wssport});
 wss.on("connection",function(ws){
+    console.log(ws)
     ws.onclose = function(){
         console.log("Client disconnected");
         this.player.disconnect();
