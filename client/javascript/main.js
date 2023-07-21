@@ -478,8 +478,7 @@ const Game = class{
                 self.recievepacketid = settings.recievepacketid;
                 self.sendpacketid = settings.sendpacketid;
                 self.timesync_timelimit = settings.timesync_timelimit;
-                self.wsslink = settings.wsslink.replaceAll("http","ws");
-                open(settings.wsslink)
+                self.wsslink = settings.wsslink;
                 self.setuprecievehandler();
             }
         }).catch(function(){

@@ -9,8 +9,8 @@ const crypto = require("crypto");
 const host = "0.0.0.0";
 const port = 8080;
 //const wsslink = "ws://localhost:443";
-const wsslink = "https://7532-2601-646-9e00-28d-8950-79d3-86c4-cce1.ngrok-free.app";
-const wssport = 556;
+const wssport = 8081;
+const wsslink = "ws://localhost:"+wssport;
 
 
 
