@@ -346,6 +346,24 @@ const Game = class{
             self.getId("ChatMessagesContainer").scrollTop = self.getId("ChatMessagesContainer").scrollHeight;
         }
     };
+    displayMessage(text){
+        const self = this;
+        var chatelement = document.createElement("div");
+        chatelement.classList = "ChatMessage";
+        var textelement = document.createElement("div");
+        textelement.textContent = text;
+        textelement.classList = "ChatAction";
+
+        var scrolldown = false;
+        if(Math.abs(self.getId("ChatMessagesContainer").scrollHeight-self.getId("ChatMessagesContainer").clientHeight-self.getId("ChatMessagesContainer").scrollTop)<1){
+            scrolldown = true;
+        }
+        chatelement.appendChild(textelement);
+        self.getId("ChatMessagesContainer").appendChild(chatelement);
+        if(scrolldown){
+            self.getId("ChatMessagesContainer").scrollTop = self.getId("ChatMessagesContainer").scrollHeight;
+        }
+    };
     getId(id){
         const self = this;
         return document.getElementById(self.idprefix+id);
@@ -353,6 +371,7 @@ const Game = class{
     resetLobby(){
         const self = this;
         self.pointerlobbyid = -1;
+        self.getId("ChatInput").value = "";
         while(self.getId("ChatMessagesContainer").children.length){
             self.getId("ChatMessagesContainer").removeChild(self.getId("ChatMessagesContainer").firstChild);
         }
@@ -430,8 +449,18 @@ const Game = class{
                 self.alertBox("Failed to join lobby.");
                 self.disconnect();
             }
+            else if(jsondata[0] == self.sendpacketid.login){
+                self.updateState(self.previousState);
+                self.alertBox("Failed to join lobby.");
+                self.disconnect();
+                self.login(self.username,self.password);
+            }
         };
-        self.recievehandler[self.recievepacketid.ratelimit] = function(jsondata){};
+        self.recievehandler[self.recievepacketid.ratelimit] = function(jsondata){
+            if(jsondata[0]==self.sendpacketid.chatmsg){
+                self.displayMessage("You are chatting too quickly.");
+            }
+        };
         self.recievehandler[self.recievepacketid.login] = function(jsondata){
             self.onlogin();
         };
@@ -593,7 +622,6 @@ const Game = class{
         if(self.wss){
             return;
         }
-        self.wss = 1;
         var wss = new WebSocket(self.wsslink);
         wss.onmessage = function(packet){
             try{
@@ -612,8 +640,8 @@ const Game = class{
         wss.onclose = function(){
             self.disconnect();
         };
+        self.wss = wss;
         wss.onopen = function(){
-            self.wss = wss;
             self.resetlobbydata();
             self.send([self.sendpacketid.login,self.accountdata.username,self.sessionid[0]]);
         };

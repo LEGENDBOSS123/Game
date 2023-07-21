@@ -9,7 +9,7 @@ const crypto = require("crypto");
 const host = "0.0.0.0";
 const port = 8080;
 //const wsslink = "ws://localhost:443";
-const wsslink = "https://5518-2601-646-9e00-28d-19f1-4dcc-2950-1789.ngrok-free.app";
+const wsslink = "https://7532-2601-646-9e00-28d-8950-79d3-86c4-cce1.ngrok-free.app";
 const wssport = 556;
 
 
@@ -122,6 +122,10 @@ const recievepacketid = {
     mapload: 9,
     login: 11
 };
+
+const acceptable_username_char = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"," ","1","2","3","4","5","6","7","8","9","0"];
+const notacceptable_username_char = ["  "];
+
 const typechecker = {};
 typechecker[recievepacketid.disconnect] = [];
 typechecker[recievepacketid.roomjoin] = [Number,String];
@@ -327,7 +331,7 @@ const player = class{
                 self.send([sendpacketid.error,recievepacketid.chatmsg]);
                 return;
             }
-            self.broadcast([sendpacketid.chatmsg,self.playerid,jsondata[0]])
+            self.broadcast([sendpacketid.chatmsg,self.playerid,jsondata[0].substring(0,400)])
         };
 
         self.ratelimits[recievepacketid.timesync] = new ratelimit(2,timesync_timelimit);
@@ -510,6 +514,14 @@ const filemanager = class{
         var salt = self.generatesalt(16);
         return self.hashpassword(password,salt);
     };
+    validate_string(string){
+        for(var i = 0;i<string.length;i++){
+            if(!acceptable_username_char.includes(string[i]) || notacceptable_username_char.includes(string[i])){
+                return false;
+            }
+        }
+        return true;
+    }
     async writeaccount(accountdata){
         const self = this;
         var error = false;
@@ -545,6 +557,9 @@ const filemanager = class{
         const self = this;
         var error = false;
         var accountdata = {};
+        if(!self.validate_string(username.toLowerCase())){
+            return {"success":false};
+        }
         await fsp.readFile(__dirname+"/accounts/"+username.toLowerCase()).then(function(accountdata2){
             accountdata = JSON.parse(accountdata2);
         }).catch(function(){
@@ -558,6 +573,9 @@ const filemanager = class{
     async createaccount(username,password){
         const self = this;
         var error = false;
+        if(!self.validate_string(username.toLowerCase())){
+            return {"success":false};
+        }
         await fsp.readdir(__dirname+"/accounts").then(async function(files){
             for(var i = 0;i<files.length;i++){
                 if(files[i].toLowerCase() == username.toLowerCase()){
@@ -605,6 +623,9 @@ const filemanager = class{
     async loginaccount(username,password){
         const self = this;
         var error = false;
+        if(!self.validate_string(username.toLowerCase())){
+            return {"success":false};
+        }
         var sessionid = ["",0];
         await fsp.readFile(__dirname+"/accounts/"+username.toLowerCase()).then(async function(accountdata){
             accountdata = JSON.parse(accountdata);
