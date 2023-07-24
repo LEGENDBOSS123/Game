@@ -7,7 +7,7 @@ const crypto = require("crypto");
 
 
 const host = "0.0.0.0";
-const port = 80;
+const port = 8080;
 //const wsslink = "ws://localhost:443";
 const wssport = 8081;
 const wsslink = "ws://localhost:"+wssport;
@@ -691,6 +691,7 @@ var lobbies = [];
 var fm = new filemanager();
 
 const requestListener = function(req,res){
+    console.log(req);
     if(req.method == "GET"){
         var url = "/../client";
         if(req.url == "/"){
