@@ -28,6 +28,8 @@ const Game = class{
         self.pointerlobbyid = -1;
         self.pointerlobbyhaspass = false;
         self.lobbyclicktimestamp = 0;
+        self.fps = 0;
+        self.fps_timestamp = 0;
         self.wsslink = "ws://localhost:443";
 
         
@@ -649,3 +651,19 @@ const Game = class{
 
 var game = new Game(document.getElementById("GameDiv"),"");
 game.setup();
+
+var rtx = new drawer();
+rtx.rtx.pushShape([[100,100],[300,200],[120,400]]);
+rtx.rtx.pushShape([[400,100],[600,200],[460,400],[300,400]]);
+
+rtx.attach(game.getId("canvas"));
+rtx.canvas.width = 800;
+rtx.canvas.height = 500;
+rtx.change_resolution(200,200);
+setInterval(rtx.draw.bind(rtx),0);
+rtx.canvas.addEventListener("mousemove",function(e){
+    var x = e.offsetX * rtx.resolution[0]/rtx.canvas.width;
+    var y = e.offsetY * rtx.resolution[1]/rtx.canvas.height;
+    rtx.middle.x = rtx.scaleToGamescreenX(x);
+    rtx.middle.y = rtx.scaleToGamescreenY(y);
+});

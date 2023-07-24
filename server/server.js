@@ -7,7 +7,7 @@ const crypto = require("crypto");
 
 
 const host = "0.0.0.0";
-const port = 8080;
+const port = 80;
 //const wsslink = "ws://localhost:443";
 const wssport = 8081;
 const wsslink = "ws://localhost:"+wssport;
@@ -123,7 +123,7 @@ const recievepacketid = {
     login: 11
 };
 
-const acceptable_username_char = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"," ","1","2","3","4","5","6","7","8","9","0"];
+const acceptable_username_char = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z"," ","1","2","3","4","5","6","7","8","9","0","_"];
 const notacceptable_username_char = ["  "];
 
 const typechecker = {};
