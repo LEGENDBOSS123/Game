@@ -7,7 +7,7 @@ const crypto = require("crypto");
 
 
 const host = "0.0.0.0";
-const port = 8080;
+const port = 80;
 //const wsslink = "ws://localhost:443";
 const wssport = 8081;
 const wsslink = "ws://localhost:"+wssport;
