@@ -154,7 +154,7 @@ const lobby = class{
         self.currentframe = 0;
         self.lobbyid = -1;
         self.gamestarttimestamp = 0;
-        self.ticspersecond = 20;
+        self.tickspersecond = 20;
 
     };
     broadcast(jsondata,exceptions=[]){
@@ -215,7 +215,7 @@ const lobby = class{
             for(var i = 0;i<keys.length;i++){
                 playerlist.push(self.playerids[keys[i]].json());
             }
-            player.send([sendpacketid.playerlist,player.playerid,self.hostid,self.ingame,self.gamestarttimestamp,playerlist]);
+            player.send([sendpacketid.playerlist,player.playerid,self.hostid,self.ingame,self.gamestarttimestamp,self.tickspersecond,playerlist]);
         }
         else{
             player.send([sendpacketid.error,recievepacketid.roomjoin]);
@@ -257,7 +257,7 @@ const player = class{
         self.loggedin = false;
         self.lobby = 0;
         self.playerid = -1;
-        self.ticspersecond = 20;
+        self.tickspersecond = 20;
         self.ratelimits = {};
         self.recievehandler = {};
         
@@ -691,7 +691,6 @@ var lobbies = [];
 var fm = new filemanager();
 
 const requestListener = function(req,res){
-    console.log(req);
     if(req.method == "GET"){
         var url = "/../client";
         if(req.url == "/"){
@@ -812,13 +811,10 @@ server.listen(port,host,function(){console.log("Server started.")});
 
 const wss = new websocket.Server({port: wssport});
 wss.on("connection",function(ws){
-    console.log(ws)
     ws.onclose = function(){
-        console.log("Client disconnected");
         this.player.disconnect();
     };
     ws.onerror = function(){
-        console.log("Client disconnected");
         this.player.disconnect();
     };
     ws.onmessage = function(packet){
@@ -833,6 +829,5 @@ wss.on("connection",function(ws){
     };
     ws.player = new player();
     ws.player.wss = ws;
-    console.log("Client connected");
     ws.player.start_timesync_timer();
 });

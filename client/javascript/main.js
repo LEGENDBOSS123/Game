@@ -17,6 +17,7 @@ const Game = class{
         self.sessionid = ["",0];
         self.inlobby = false;
         self.state = "login";
+        self.tickspersecond = 0;
         self.inchat = false;
         self.ineditor = false;
         self.previousState = self.state;
@@ -30,12 +31,21 @@ const Game = class{
         self.lobbyclicktimestamp = 0;
         self.fps = 0;
         self.fps_timestamp = 0;
+        self.drawer = 0;
+        self.world = 0;
         self.wsslink = "ws://localhost:443";
 
         
     };
     unfocusAll(){
         document.activeElement.blur();
+    };
+    currentFrame(){
+        const self = this;
+        if(!self.inlobby || !self.lobbydata.gamestarttimestamp){
+            return 0;
+        }
+        return (Date.now()-self.lobbydata.gamestarttimestamp)/1000 * self.tickspersecond;
     };
     createHTML(){
         const self = this;
@@ -50,7 +60,7 @@ const Game = class{
                     self.updateState("main menu");
                 }
                 else{
-                    self.alertBox("Wrong account info.");
+                    self.alertBox("Wrong account info. Make sure your password is more than 3 characters long and less than 21, and your username is more than 2 characters and less than 19.");
                 }
             });
         };
@@ -72,7 +82,7 @@ const Game = class{
                     });
                 }
                 else{
-                    self.alertBox("Failed to create account.");
+                    self.alertBox("Failed to create account. Make sure your password is more than 3 characters long and less than 21, and your username is more than 2 characters and less than 19.");
                 }
             });
         };
@@ -169,6 +179,18 @@ const Game = class{
             self.displayLobbies();
         };
     };
+    setupWorld(){
+        const self = this;
+        var frame = new Frame();
+        frame.pushShape((new Shape()).makeShape([[20,20],[80,10],[30,100]]));
+        self.world = new World(frame);
+    };
+    setupDrawer(){
+        const self = this;
+        self.drawer = new Drawer();
+        self.drawer.attach(game.getId("GameCanvas"),self.world);
+        self.drawer.change_resolution(200,300);
+    };
     updateState(text){
         const self = this;
         self.previousState = self.state;
@@ -211,11 +233,13 @@ const Game = class{
         if(self.state == "inlobby"){
             self.getId("InLobbyLeftColumn").style.display = "block";
             self.getId("ChatContainer").style.display = "block";
+            self.getId("MiddleInLobby").style.display = "block";
             self.resetLobby();
         }
         else{
             self.getId("InLobbyLeftColumn").style.display = "none";
             self.getId("ChatContainer").style.display = "none";
+            self.getId("MiddleInLobby").style.display = "none";
         }
     };
     sanitize(text){
@@ -228,6 +252,22 @@ const Game = class{
             self.getId("AlertBoxScreen").style.display = "block";
             self.unfocusAll();
         }
+    };
+    draw(){
+        const self = this;
+        if(self.inlobby){
+            return;
+        }
+        self.fps = 1000/(Date.now() - game.fps_timestamp);
+        self.fps_timestamp = Date.now();
+        self.drawer.canvas.onmousemove = function(e){
+            var x = e.offsetX * self.drawer.resolution[0]/self.drawer.canvas.clientWidth;
+            var y = e.offsetY * self.drawer.resolution[1]/self.drawer.canvas.clientHeight;
+            self.drawer.middle.x = self.drawer.scaleToGamescreenX(x);
+            self.drawer.middle.y = self.drawer.scaleToGamescreenY(y);
+        };
+        self.drawer.draw(self.world.getFrame(self.currentFrame()));
+        requestAnimationFrame(self.draw.bind(self));
     };
     async promptBox(text){
         const self = this;
@@ -434,7 +474,8 @@ const Game = class{
             }
             self.lobbydata.ingame = jsondata[2];
             self.lobbydata.gamestarttimestamp = jsondata[3];
-            var playeridlist = jsondata[4];
+            self.tickspersecond = jsondata[4];
+            var playeridlist = jsondata[5];
             for(var i = 0;i<playeridlist.length;i++){
                 self.lobbydata.playerids[playeridlist[i].id] = playeridlist[i];
             }
@@ -493,6 +534,8 @@ const Game = class{
         self.fetchpacketids();
         self.createHTML();
         self.updateState();
+        self.setupWorld();
+        self.setupDrawer();
     };
     async postjson(jsondata){
         const self = this;
@@ -651,19 +694,3 @@ const Game = class{
 
 var game = new Game(document.getElementById("GameDiv"),"");
 game.setup();
-
-var rtx = new drawer();
-rtx.rtx.pushShape([[100,100],[300,200],[120,400]]);
-rtx.rtx.pushShape([[400,100],[600,200],[460,400],[300,400]]);
-
-rtx.attach(game.getId("canvas"));
-rtx.canvas.width = 800;
-rtx.canvas.height = 500;
-rtx.change_resolution(200,200);
-setInterval(rtx.draw.bind(rtx),0);
-rtx.canvas.addEventListener("mousemove",function(e){
-    var x = e.offsetX * rtx.resolution[0]/rtx.canvas.width;
-    var y = e.offsetY * rtx.resolution[1]/rtx.canvas.height;
-    rtx.middle.x = rtx.scaleToGamescreenX(x);
-    rtx.middle.y = rtx.scaleToGamescreenY(y);
-});
