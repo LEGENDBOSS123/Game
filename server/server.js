@@ -223,7 +223,6 @@ const lobby = class{
     };
     findid(lobbies){
         const self = this;
-        crypto.randomBytes(16);
         var maxid = -1;
         for(var i = 0;i<lobbies.length;i++){
             if(lobbies[i].lobbyid>maxid){
@@ -260,7 +259,8 @@ const player = class{
         self.tickspersecond = 20;
         self.ratelimits = {};
         self.recievehandler = {};
-        
+        self.currentmove = 0;
+        self.maxmoveid = 0;
         self.ratelimits[recievepacketid.disconnect] = new ratelimit();
         self.recievehandler[recievepacketid.disconnect] = function(jsondata){
             self.disconnect();
@@ -312,11 +312,11 @@ const player = class{
                 self.send([sendpacketid.error,recievepacketid.movementinputs]);
                 return;
             }
-            if(!self.lobby.ingame || Math.abs(self.lobby.currentframe-jsondata[1])>3){
+            if(!self.lobby.ingame || self.maxmoveid <= jsondata[1]){
                 self.send([sendpacketid.error,recievepacketid.movementinputs]);
                 return;
             }
-            self.broadcast([sendpacketid.movementinputs,self.playerid,jsondata[0],jsondata[1]],[self]);
+            self.currentmove = jsondata[0];
         };
 
         self.ratelimits[recievepacketid.gamestart] = new ratelimit(1,3000);

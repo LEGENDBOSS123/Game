@@ -32,9 +32,19 @@ const Vector = class {
     static randint(a,b){
         return Math.floor(Math.min(a,b))+Math.floor(Math.random()*(Math.abs(a-b)+1));
     }
+    static hash(x,y){
+        return 7517*x + 7673*y;
+    };
     crossWith(v1){
         const self = this;
         return self.x*v1.y - self.y*v1.x
+    };
+    json(){
+        const self = this;
+        return {"x":self.x,"y":self.y};
+    }
+    static loadjson(json){
+        return new Vector(json.x,json.y);
     };
     addTo(v){
         const self = this;

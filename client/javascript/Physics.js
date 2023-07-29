@@ -13,6 +13,13 @@ const Segment = class {
     static lengthOf(x1,y1,x2,y2){
         return Math.sqrt((x1-x2)**2+(y1-y2)**2);
     };
+    json(){
+        const self = this;
+        return {"v1":self.v1.json(),"v2":self.v2.json()};
+    };
+    static loadjson(json){
+        return new Segment(Vector.loadjson(json.v1),Vector.loadjson(json.v2));
+    };
     length(){
         const self = this;
         return Math.sqrt((self.v1.x-self.v2.x)**2+(self.v1.y-self.v2.y)**2);
@@ -21,7 +28,6 @@ const Segment = class {
         const self = this;
     };
 };
-
 const Shape = class {
     constructor(){
         const self = this;
@@ -100,7 +106,10 @@ const Shape = class {
             return false;
         }
         return true;
-    }
+    };
+    checkIntersectionWith(s){
+        
+    };
 };
 
 const Frame = class {
@@ -113,12 +122,15 @@ const Frame = class {
     };
     updateFrame(){
         const self = this;
+        return self;
     };
     copyFrame(){
         const self = this;
+        return self;
     };
-    interpolate(percentage){
+    interpolate(frame,percentage){
         const self = this;
+        return self;
     };
     makeFrame(){
         const self = this;
@@ -134,11 +146,56 @@ const World = class {
         self.frames = new Map();
         self.frames.set(0,f);
         self.max_frame = 0;
+        self.staticshapes = new Map();
+        self.staticshapeslist = [];
+        self.grid_size = 25;
         self.game_dimensions = [800,500];
+    };
+    pushStaticShape(s,push=true){
+        const self = this;
+        if(push){
+            self.staticshapeslist.push(s);
+        }
+        for(var x = Math.floor(s.hitbox.v1.x/self.grid_size)*self.grid_size;x<Math.floor(s.hitbox.v2.x/self.grid_size)*self.grid_size;x+=self.grid_size){
+            for(var y = Math.floor(s.hitbox.v1.y/self.grid_size)*self.grid_size;y<Math.floor(s.hitbox.v2.y/self.grid_size)*self.grid_size;y+=self.grid_size){
+                if(s.checkIntersection(x,y)){
+                    var hash_val = Vector.hash(x,y);
+                    if(!self.staticshapes.has(hash_val)){
+                        self.staticshapes.set(hash_val,[]);
+                    }
+                    self.staticshapes.get(hash_val).push(s);
+                }
+            }
+        }
+    };
+    recalculateStaticShapeMap(){
+        const self = this;
+        self.staticshapes = new Map();
+        for(var i = 0;i<self.staticshapeslist.length;i++){
+            self.pushStaticShape(self.staticshapeslist[i],false);
+        };
+    };
+    getCell(x,y){
+        const self = this;
+        var hash_val = Vector.hash(Math.floor(x/self.grid_size)*self.grid_size,Math.floor(y/self.grid_size)*self.grid_size);
+        if(!self.staticshapes.has(hash_val)){
+            self.staticshapes.set(hash_val,[]);
+        }
+        return self.staticshapes.get(hash_val);
     };
     getFrame(f){
         const self = this;
         var return_frame = self.frames.get(Math.floor(f));
+        if(!return_frame){
+            while(self.max_frame<f){
+                self.frames.set(self.max_frame+1,self.frames.get(self.max_frame).updateFrame());
+                self.max_frame+=1;
+            }
+            return_frame = self.frames.get(Math.floor(f)).interpolate(self.frames.get(Math.floor(f)+1),f-Math.floor(f));
+        }
+        else{
+            return_frame = return_frame.interpolate(self.frames.get(Math.floor(f)+1),f-Math.floor(f));
+        }
         return return_frame;
     };
 };

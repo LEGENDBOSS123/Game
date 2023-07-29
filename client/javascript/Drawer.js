@@ -18,7 +18,9 @@ const Drawer = class {
         self.rescalecanv = document.createElement("canvas");
         self.rescalecanv_ctx = self.rescalecanv.getContext("2d");
         self.canv_ctx.imageSmoothingEnabled = false;
+        self.rescalecanv_ctx.imageSmoothingEnabled = false;
         self.world = world;
+        self.rtx.world = world;
     };
     scaleToGamescreenX(x){
         const self = this;
@@ -51,7 +53,7 @@ const Drawer = class {
         px = Math.floor(px);
         py = Math.floor(py);
         if(self.image_data.data[4*py*self.image_data.width + 4*px+3] != 0){
-            //return self.image_data;
+            return self.image_data;
         }
         self.image_data.data[4*py*self.image_data.width + 4*px] = color[0];
         self.image_data.data[4*py*self.image_data.width + 4*px+1] = color[1];

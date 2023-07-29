@@ -42,7 +42,7 @@ const Game = class{
     };
     currentFrame(){
         const self = this;
-        if(!self.inlobby || !self.lobbydata.gamestarttimestamp){
+        if(!self.inlobby || !self.lobbydata.ingame){
             return 0;
         }
         return (Date.now()-self.lobbydata.gamestarttimestamp)/1000 * self.tickspersecond;
@@ -182,8 +182,9 @@ const Game = class{
     setupWorld(){
         const self = this;
         var frame = new Frame();
-        frame.pushShape((new Shape()).makeShape([[20,20],[80,10],[30,100]]));
         self.world = new World(frame);
+        self.world.pushStaticShape((new Shape()).makeShape([[20,20],[300,10],[80,100]]));
+        self.world.pushStaticShape((new Shape()).makeShape([[200,20],[500,300],[700,200]]));
     };
     setupDrawer(){
         const self = this;
@@ -234,6 +235,7 @@ const Game = class{
             self.getId("InLobbyLeftColumn").style.display = "block";
             self.getId("ChatContainer").style.display = "block";
             self.getId("MiddleInLobby").style.display = "block";
+            self.inlobby = true;
             self.resetLobby();
         }
         else{
@@ -255,7 +257,7 @@ const Game = class{
     };
     draw(){
         const self = this;
-        if(self.inlobby){
+        if(!self.inlobby){
             return;
         }
         self.fps = 1000/(Date.now() - game.fps_timestamp);
