@@ -48,18 +48,14 @@ const Drawer = class {
     change_pixel(px,py,color){
         const self = this;
         if(!Vector.between(0,self.image_data.width-1,px) || !Vector.between(0,self.image_data.height-1,py)){
-            return self.image_data;
+            return;
         }
         px = Math.floor(px);
         py = Math.floor(py);
-        if(self.image_data.data[4*py*self.image_data.width + 4*px+3] != 0){
-            return self.image_data;
+        if(self.image_data.data[4*py*self.image_data.width + 4*px+3] > 0){
+            return;
         }
-        self.image_data.data[4*py*self.image_data.width + 4*px] = color[0];
-        self.image_data.data[4*py*self.image_data.width + 4*px+1] = color[1];
-        self.image_data.data[4*py*self.image_data.width + 4*px+2] = color[2];
-        self.image_data.data[4*py*self.image_data.width + 4*px+3] = color[3];
-        return self.image_data;
+        self.image_data.data.set(color,4*py*self.image_data.width + 4*px);
     }
     get_pixel(px,py){
         const self = this;

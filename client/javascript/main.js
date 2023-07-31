@@ -31,6 +31,8 @@ const Game = class{
         self.lobbyclicktimestamp = 0;
         self.fps = 0;
         self.fps_timestamp = 0;
+        self.fps_counter = 0;
+        self.fps_max_counter = 20;
         self.drawer = 0;
         self.world = 0;
         self.wsslink = "ws://localhost:443";
@@ -190,7 +192,7 @@ const Game = class{
         const self = this;
         self.drawer = new Drawer();
         self.drawer.attach(game.getId("GameCanvas"),self.world);
-        self.drawer.change_resolution(200,300);
+        self.drawer.change_resolution(365,225);
     };
     updateState(text){
         const self = this;
@@ -260,8 +262,14 @@ const Game = class{
         if(!self.inlobby){
             return;
         }
-        self.fps = 1000/(Date.now() - game.fps_timestamp);
-        self.fps_timestamp = Date.now();
+        if(self.fps_counter>=self.fps_max_counter){
+            self.fps = self.fps_max_counter * 1000/(Date.now() - game.fps_timestamp);
+            self.fps_timestamp = Date.now();
+            self.fps_counter = 0;
+        }
+        else{
+            self.fps_counter+=1;
+        }
         self.drawer.canvas.onmousemove = function(e){
             var x = e.offsetX * self.drawer.resolution[0]/self.drawer.canvas.clientWidth;
             var y = e.offsetY * self.drawer.resolution[1]/self.drawer.canvas.clientHeight;
